@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Runtime.Intrinsics.X86;
+using webapi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => options.AddPolicy("AllowReact", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
@@ -14,7 +13,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure MySQL connection
+var connectionString = builder.Configuration
+    .GetConnectionString("MyDbConnection");
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 36))
+    ));
 
 var app = builder.Build();
 
